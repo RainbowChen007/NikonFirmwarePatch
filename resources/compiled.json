@@ -1312,7 +1312,7 @@
     },
     "opengate": {
       "bytes": 11568,
-      "sha256": "693269ed8db5066947132e1885bc3063aa070f815995b8a0f009e62c50fc246d",
+      "sha256": "e66b73935ae598decbe6c84434e5d494d1d9e8230d32579b87d3808a5a1ad386",
       "symbols": {
         "configuration_hook": {
           "va": "0x40960000",
@@ -1610,10 +1610,10 @@
         "z8opengate/src/d7_hooks.S": "857c5bd4a94caa61d00f604a17506f3e4d7f6cc85eb61f60a72bef35a68332c6",
         "z8opengate/src/d8_hooks.S": "1e749d5fd31140a13b6a3923ab1e3f90efea90c72df0a69e697b62b5bf5e029b",
         "z8opengate/src/d9_hooks.S": "7c4024f20b8a7058918a8043237733fa79c8c5b479a3c87c4f88778a55366079",
-        "z8opengate/src/menu_repair_hooks.S": "be44f87cfb29cda2fdd9c35da8ff131d1a1fc8f1749bf4a1e9e88a035c2b66fb",
+        "z8opengate/src/menu_repair_hooks.S": "9649e63830ee5f18ce9bf22b7938a0903db53eb9fb239cbb095f36331a718022",
         "z8opengate/src/ui_hooks.S": "d42854e5eb01fb48051adae5a9c1edfa7adf17ef7535dce31da7964599dcb8b4"
       },
-      "compiler": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+      "compiler": "Apple clang version 21.0.0 (clang-2100.3.34.2)",
       "flags": [
         "-target",
         "aarch64-none-elf",
@@ -1832,19 +1832,23 @@
       "resource": "resources/h265.bin"
     },
     "log": {
-      "bytes": 2728,
-      "sha256": "9a3070e234a33b26cc998434e6e9fc046befd40760622c7efc4555f41c83a8f4",
+      "bytes": 3424,
+      "sha256": "08a0611c2fd0dcdae4eca926eaf70ae461eef58f6717906a97889ecff509ba46",
       "symbols": {
         "lg_pb_names": {
-          "va": "0x40b00a90",
+          "va": "0x40b00d38",
           "bytes": 0
         },
         "lg_value_texts": {
-          "va": "0x40b00a78",
+          "va": "0x40b00d10",
           "bytes": 0
         },
         "lg_option_items": {
-          "va": "0x40b00a70",
+          "va": "0x40b00d00",
+          "bytes": 0
+        },
+        "lg_row_type": {
+          "va": "0x40b00cf8",
           "bytes": 0
         },
         "lg_rgb_hook": {
@@ -1852,125 +1856,129 @@
           "bytes": 0
         },
         "lg_nlg_hook": {
-          "va": "0x40b00050",
+          "va": "0x40b00060",
           "bytes": 0
         },
         "lg_m2_hook": {
-          "va": "0x40b00090",
+          "va": "0x40b000c0",
           "bytes": 0
         },
         "lg_m1_hook": {
-          "va": "0x40b000e0",
-          "bytes": 0
-        },
-        "lg_cpxs_hook": {
           "va": "0x40b00130",
           "bytes": 0
         },
+        "lg_cpxs_hook": {
+          "va": "0x40b001a0",
+          "bytes": 0
+        },
         "lg_tag26_tail": {
-          "va": "0x40b00190",
+          "va": "0x40b00220",
           "bytes": 0
         },
         "lg_keyclass_hook": {
-          "va": "0x40b001d0",
+          "va": "0x40b00260",
           "bytes": 0
         },
         "lg_keys_gate": {
-          "va": "0x40b001f0",
+          "va": "0x40b00280",
           "bytes": 0
         },
         "lg_keys_close": {
-          "va": "0x40b00290",
+          "va": "0x40b00320",
           "bytes": 0
         },
         "lg_keycount_hook": {
-          "va": "0x40b002c0",
+          "va": "0x40b00350",
           "bytes": 0
         },
         "lg_cc_copy_hook": {
-          "va": "0x40b00300",
+          "va": "0x40b00390",
           "bytes": 0
         },
         "lg_cc_next_hook": {
-          "va": "0x40b00330",
+          "va": "0x40b003c0",
           "bytes": 0
         },
         "lg_pc_write": {
-          "va": "0x40b00360",
+          "va": "0x40b003f0",
           "bytes": 0
         },
         "lg_pc_parse_tail": {
-          "va": "0x40b00430",
+          "va": "0x40b004f0",
           "bytes": 0
         },
         "lg_pb_label": {
-          "va": "0x40b004a0",
+          "va": "0x40b00590",
           "bytes": 0
         },
         "lg_pb_info": {
-          "va": "0x40b00510",
+          "va": "0x40b00640",
           "bytes": 0
         },
         "lg_pb_build": {
-          "va": "0x40b005b0",
+          "va": "0x40b00720",
           "bytes": 0
         },
         "lg_lv_clear": {
-          "va": "0x40b00650",
-          "bytes": 0
-        },
-        "lg_va_sel0": {
-          "va": "0x40b00670",
-          "bytes": 0
-        },
-        "lg_va_sel1": {
-          "va": "0x40b006c0",
-          "bytes": 0
-        },
-        "lg_va_cmp_a": {
-          "va": "0x40b00710",
-          "bytes": 0
-        },
-        "lg_va_cmp_b": {
-          "va": "0x40b00760",
-          "bytes": 0
-        },
-        "lg_va_store_a": {
-          "va": "0x40b007b0",
-          "bytes": 0
-        },
-        "lg_va_store_b": {
           "va": "0x40b00800",
           "bytes": 0
         },
+        "lg_va_sel0": {
+          "va": "0x40b00820",
+          "bytes": 0
+        },
+        "lg_va_sel1": {
+          "va": "0x40b00880",
+          "bytes": 0
+        },
+        "lg_va_cmp_a": {
+          "va": "0x40b008f0",
+          "bytes": 0
+        },
+        "lg_va_cmp_b": {
+          "va": "0x40b00940",
+          "bytes": 0
+        },
+        "lg_va_store_a": {
+          "va": "0x40b00990",
+          "bytes": 0
+        },
+        "lg_va_store_b": {
+          "va": "0x40b009e0",
+          "bytes": 0
+        },
         "lg_icon_tail": {
-          "va": "0x40b00850",
+          "va": "0x40b00a30",
           "bytes": 0
         },
         "lg_menu_refresh_hook": {
-          "va": "0x40b008b0",
+          "va": "0x40b00ac0",
           "bytes": 0
         },
         "lg_sub_entry_hook": {
-          "va": "0x40b00930",
+          "va": "0x40b00b40",
           "bytes": 0
         },
         "lg_sub_ok_hook": {
-          "va": "0x40b00990",
+          "va": "0x40b00ba0",
           "bytes": 0
         }
       },
       "source_sha256": {
         "z8log/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "z8log/data.json": "e4d82ff80513d99a1e5926e62f7323807158224d400f3f4797b52bfc940dd2c5",
+        "z8log/data.json": "80845a751ab2671b9d66d7b7044fe056b611ec94827e9f3bc232649feff9d31d",
+        "z8log/icons/clog2_fill.png": "bd7a8d8fc67d9543500e11f0813fdeea5a232fe824669c109d69e36a6bc23d45",
+        "z8log/icons/clog2_outline.png": "c894f349b270f78d5251fbd44406bb397ef3b6283d9dbb27489c13aa0dae57d1",
+        "z8log/icons/clog3_fill.png": "8ebd8c034f3cce99f17d457c349d16f6530e7dfdb651c37bdd89bda65ccef4dd",
+        "z8log/icons/clog3_outline.png": "55df2054dd83667393ee455dedc48914474fa79e2b156da9d53a8c9497adda03",
         "z8log/icons/log3g10_fill.png": "4d1be1c5d89e1076ad703de4084ed688fbd14975cdcad05a672ff9d82ebf89e3",
         "z8log/icons/log3g10_outline.png": "3807023191ad9537375c4e29deda0b1035d98010fbd7a8094d7df418a7e9e1dc",
         "z8log/icons/slog3_fill.png": "34266622d2ecbee118002dd1da56b3f05986ac97a25c0f5369a1707c5f982e44",
         "z8log/icons/slog3_outline.png": "fb99de6066385019279faf29d855faf81b7c3ce9292dfbc40343985c1153b626",
-        "z8log/patcher.py": "2f50e57551b3d23e4b3bf55115d1a86d6f2521444118a59fe0d16a5fb3977583",
-        "z8log/src/hooks.S": "6662610ddc3b1fcacec8804d6a21bd833868d8ad16f52cefba59c3a98f0dc968"
+        "z8log/patcher.py": "2d485baeb37884eb311d51b013f5a16f7632af28bb43e671af07ef4c6df0feef",
+        "z8log/src/hooks.S": "d2b9b18ab0d72bd89771973a070cb76aaa5ff9c6330118ff09ecbbbd0ef7a133"
       },
-      "compiler": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+      "compiler": "Apple clang version 21.0.0 (clang-2100.3.34.2)",
       "flags": [
         "-target",
         "aarch64-none-elf",
@@ -1983,21 +1991,37 @@
         "-DLG_CC_SLOG3=0x40b09500",
         "-DLG_CPXS1=0x40b09100",
         "-DLG_CPXS2=0x40b09300",
+        "-DLG_CPXS3=0x40b09d80",
+        "-DLG_CPXS4=0x40b0af80",
         "-DLG_M1_1=0x40b09040",
         "-DLG_M1_2=0x40b09060",
+        "-DLG_M1_3=0x40b09d48",
+        "-DLG_M1_4=0x40b0af48",
         "-DLG_M2_1=0x40b09000",
         "-DLG_M2_2=0x40b09020",
+        "-DLG_M2_3=0x40b09d30",
+        "-DLG_M2_4=0x40b0af30",
         "-DLG_NLG1=0x40b08c00",
         "-DLG_NLG2=0x40b08e00",
+        "-DLG_NLG3=0x40b09b60",
+        "-DLG_NLG4=0x40b0ad60",
         "-DLG_RGB1=0x40b08000",
         "-DLG_RGB2=0x40b08600",
+        "-DLG_RGB3=0x40b09600",
+        "-DLG_RGB4=0x40b0a800",
         "-DLG_VA_CB1=0x40b0a040",
         "-DLG_VA_CB2=0x40b0a060",
+        "-DLG_VA_CB3=0x40b0a420",
+        "-DLG_VA_CB4=0x40b0a620",
         "-DLG_VA_MAT1=0x40b0a000",
         "-DLG_VA_MAT2=0x40b0a020",
+        "-DLG_VA_MAT3=0x40b0a400",
+        "-DLG_VA_MAT4=0x40b0a600",
         "-DOPTION_ITEM0=0x35c0",
         "-DOPTION_ITEM1=0x35c1",
         "-DOPTION_ITEM2=0x35c2",
+        "-DOPTION_ITEM3=0x35c3",
+        "-DOPTION_ITEM4=0x35c4",
         "-DPB_TYPE=0xa1010e021",
         "-DTEXT_STYLE=0x2ce",
         "-DVA_LAST=0xa1010e020"

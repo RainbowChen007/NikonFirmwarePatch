@@ -10,7 +10,7 @@
 
 ### 支持范围
 
-开放门支持 **N-RAW、FX 3:2、8.3K 30／25／24p**，有效图像 **8256×5504**。普通 16:9 模式仍可选择，其 8.3K 有效图像为 8256×4644。不增加 50／60p 开放门，也不把 ProRes／H.265 改成 3:2。
+开放门支持 **N-RAW、FX 3:2、8.3K 30／25／24p**，有效图像 **8256×5504**。普通 16:9 模式仍可选择，其 8.3K 有效图像为 8256×4644。不新增 50／60p 的开放门录像档，也不把 ProRes／H.265 改成 3:2。N-RAW 代理若带有与 30／25／24p 相同的前 19 字节画面参数（50p／59.94p 也使用这组前缀），会换成 27:32 像素宽高比，播放器按 1620×1080 显示；帧率仍由文件容器记录。
 
 ### 使用步骤
 
@@ -39,7 +39,7 @@
 
 ### Supported modes
 
-Open gate supports **N-RAW, FX 3:2, 8.3K 30/25/24p**, with **8256×5504** active pixels. Ordinary 16:9 modes remain available; 8.3K 16:9 has 8256×4644 active pixels. It adds neither 50/60p open gate nor ProRes/H.265 3:2.
+Open gate recording remains **N-RAW, FX 3:2, 8.3K 30/25/24p**, with **8256×5504** active pixels. Ordinary 16:9 modes remain available; 8.3K 16:9 has 8256×4644 active pixels. It adds neither a 50/60p recording tier nor ProRes/H.265 3:2. An N-RAW proxy whose picture-parameter prefix matches the shared 19 bytes (including 50p and 59.94p) is rewritten to a 27:32 sample aspect, so players present 1620×1080; frame rate stays in the file container.
 
 ### Steps
 

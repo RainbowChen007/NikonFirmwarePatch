@@ -4,9 +4,9 @@ from z8prores.package import require
 from z8patch.image import BASE, branch
 
 STRING_IDS = {'opengate-nraw': (3137,5), 'pixelshift': (3142,5), 'prores': (3147,6),
-              'anamorphic': (3153,8), 'h265': (3161,56), 'log': (3217,8)}
+              'anamorphic': (3153,8), 'h265': (3161,56), 'log': (3217,10)}
 TEXT, TABLES, TABLES_END = 0x40A50000, 0x40A70000, 0x40AF0000
-STRING_END = 3225
+STRING_END = 3227
 BANK, CONFIG = 0x40980000, 0x40980F00
 ROWS, EVENTS, PAGE, CALLBACK = 0x3AA4758, 0x3AA4EE8, 0x4BCC2B0, 0x4BF3A80
 VIDEO_ROWS, VIDEO_EVENTS = 0x40A30000, 0x40A31000

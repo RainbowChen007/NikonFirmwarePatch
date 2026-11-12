@@ -6,21 +6,25 @@
 
 ## 机内设置与适用范围
 
-`--features log-colour` 提供三档：
+`--features log-colour` 提供五档，菜单顺序如下：
 
 | 机内选择 | 后期输入色域 / Input gamut | 后期输入曲线 / Input gamma |
 |---|---|---|
 | N-Log | Rec.2020 / BT.2020 | Nikon N-Log |
-| S-Log3 | Sony S-Gamut3.Cine | Sony S-Log3 |
 | Log3G10 | REDWideGamutRGB | RED Log3G10 |
+| S-Log3 | Sony S-Gamut3.Cine | Sony S-Log3 |
+| C-Log2 | Canon Cinema Gamut | Canon Log 2 |
+| C-Log3 | Canon Cinema Gamut | Canon Log 3 |
 
 1. 选择支持 Log 的录像类型，例如 H.265 10-bit 或 ProRes 422，并选择 Log 色调。
 2. 在视频拍摄菜单的“Log 设定”中选择所需类型；它按视频拍摄菜单库保存。
 3. 按需开启机内显示辅助。辅助只影响监看，不烘焙进录像；后期仍须按原 Log 类型解释。
 
-全选固件已实机验证已有和新录 N-RAW 代理回放。取景图标、适用的片段元数据随所选类型对应。回放名称与显示辅助按片段识别，返回取景后恢复菜单选择。S-Log3 保留非负截断，菜单没有截零测试行。
+全选固件已实机验证已有和新录 N-RAW 代理回放。取景图标、适用的片段元数据随所选类型对应。回放名称与显示辅助按片段识别，返回取景后恢复菜单选择。S-Log3 与 C-Log2 保留非负截断，菜单没有截零测试行。
 
-**以下步骤用于已编码的 H.265／ProRes 422 Log 片段。** N-RAW、ProRes RAW 走各软件的 RAW 解码路径；机内选了 S-Log3 或 Log3G10，不等于 RAW 已编码成该曲线。RAW 的色调分类保留原厂行为。
+C-Log2 使用佳能公开的 Canon Log 2 公式，采样在与 S-Log3 相同的 229 个节点上；反射率 `0.18` 对应佳能场景线性 `0.20`。线性矩阵把已标定的 Log3G10 结果换到 Cinema Gamut，不是新的色卡拟合。显示辅助沿用 S-Log3 的灰阶曲线，矩阵改为 Cinema Gamut 到 Rec.709。Resolve 里手动指定 Cinema Gamut 与 Canon Log 2，并保持全范围电平。这段还没有与 S-Log3、Log3G10 同等级的实拍色差验收。
+
+**以下步骤用于已编码的 H.265／ProRes 422 Log 片段。** N-RAW、ProRes RAW 走各软件的 RAW 解码路径；机内选了 S-Log3、Log3G10 或 C-Log2，不等于 RAW 已编码成该曲线。RAW 的色调分类保留原厂行为。
 
 ## 自动识别：已有测试说明了什么
 
@@ -29,7 +33,7 @@
 | 软件 | 已观察到的行为 | 使用当前补丁素材时应做什么 |
 |---|---|---|
 | Resolve | 对应当前 S-Log3／Log3G10 写法的 Nikon 色调标签被识别为 `Rec709 (Scene)`；修改 Apple 的色彩键没有让它改认 S-Log3 | 在媒体池里手动指定实际输入色域和曲线。只改项目默认输入不够，片段的明确标签可能仍优先 |
-| FCP | 带相应色彩键的 ProRes 和 H.265 样片可选择 `Nikon N-Log` 或 `Sony S-Log3/S-Gamut3.Cine`；不带该键时显示 `None` | 导入后检查“相机 LUT”。S-Log3 应使用带 **Cine** 的选项；Log3G10 按下面的自定转换流程处理 |
+| FCP | 带相应色彩键的 ProRes 和 H.265 样片可选择 `Nikon N-Log` 或 `Sony S-Log3/S-Gamut3.Cine`；不带该键时显示 `None` | 导入后检查“相机 LUT”。S-Log3 应使用带 **Cine** 的选项；Log3G10 与 C-Log2 按自定转换处理，不借用 Nikon 或 Sony 的相机 LUT |
 
 当前补丁为 N-Log／S-Log3 写入相应色彩键，Log3G10 不借用 N-Log 或 Sony 的相机 LUT 标识。因此，**`Rec709 (Scene)` 或 `None` 不代表 Log 画面已还原**。软件升级后也应复核设置，不假定识别行为永远相同。其他后期软件也按输入表指定色域／曲线，或使用输入、输出明确的技术 LUT；没有本仓库识别测试的软件，不预设它能自动识别。
 
@@ -102,15 +106,19 @@ F LUT 的数值核验、使用顺序和限制见 [LUT 说明](../luts/README.md)
 
 ### Camera and clip scope
 
-Choose a Log-capable mode such as 10-bit H.265 or ProRes 422, select Log tone, then select N-Log, S-Log3 or Log3G10 in Log settings. The choice is stored per movie bank. View assist is for monitoring and is not baked into the recording. Playback follows the clip; returning to live view restores the menu choice. S-Log3 keeps the non-negative clamp.
+Choose a Log-capable mode such as 10-bit H.265 or ProRes 422, select Log tone, then select N-Log, Log3G10, S-Log3, C-Log2 or C-Log3 in Log settings. The choice is stored per movie bank. View assist is for monitoring and is not baked into the recording. Playback follows the clip; returning to live view restores the menu choice. S-Log3 and C-Log2 keep the non-negative clamp.
+
+C-Log2 uses Canon’s published Canon Log 2 formula on the same 229 nodes as S-Log3. Reflectance 0.18 is Canon scene-linear 0.20. The matrix converts the calibrated Log3G10 result into Cinema Gamut; it is not a new colour-card fit. View assist keeps the S-Log3 neutral curve and uses a Cinema Gamut to Rec.709 matrix. In Resolve, assign Cinema Gamut and Canon Log 2 manually and keep full-range levels. This mode does not yet have the colour-card acceptance recorded for S-Log3 and Log3G10.
 
 Use these input pairs:
 
 | Camera choice | Input gamut | Input gamma |
 |---|---|---|
 | N-Log | Rec.2020 / BT.2020 | Nikon N-Log |
-| S-Log3 | Sony S-Gamut3.Cine | Sony S-Log3 |
 | Log3G10 | REDWideGamutRGB | RED Log3G10 |
+| S-Log3 | Sony S-Gamut3.Cine | Sony S-Log3 |
+| C-Log2 | Canon Cinema Gamut | Canon Log 2 |
+| C-Log3 | Canon Cinema Gamut | Canon Log 3 |
 
 These instructions cover encoded H.265/ProRes 422 clips. N-RAW and ProRes RAW retain their native RAW classification and require the application's RAW decode workflow; the camera's Log-menu choice does not establish their decoded output space.
 
@@ -119,7 +127,7 @@ These instructions cover encoded H.265/ProRes 422 clips. N-RAW and ProRes RAW re
 Metadata tests used **Final Cut Pro 11.2** and **DaVinci Resolve 21.1.2 Free**. Some samples changed tags only: they test recognition, not colour accuracy or the final combined firmware.
 
 - Resolve identified the Nikon tag used by the current S-Log3/Log3G10 implementation as `Rec709 (Scene)`. Changing the Apple colour key did not make it recognise S-Log3. Explicitly override each clip's input; changing only the project default may leave the clip tag in effect.
-- FCP selected Nikon N-Log or Sony S-Log3/S-Gamut3.Cine for appropriately tagged ProRes and H.265 samples; removing the key gave None. Check Camera LUT after import. The current Log3G10 implementation does not borrow a Nikon/Sony camera-LUT identifier.
+- FCP selected Nikon N-Log or Sony S-Log3/S-Gamut3.Cine for appropriately tagged ProRes and H.265 samples; removing the key gave None. Check Camera LUT after import. Log3G10 and C-Log2 do not borrow a Nikon or Sony camera-LUT identifier.
 
 `Rec709 (Scene)` and `None` do not mean that the recorded Log image has already been converted. Recheck behaviour when changing software versions. In other editors, assign the table's input pair or use a technical LUT with explicit input/output spaces; automatic recognition has not been established by this repository.
 

@@ -34,12 +34,12 @@ def verify_contract(old,new,features):
     # 36 offset arrays: native text offsets are byte-for-byte retained, added IDs
     # are present exactly for their selected modules. String IDs stay fixed across masks.
     ranges=[(3137,3142,framing),(3142,3147,photo),(3147,3153,quality),
-            (3153,3161,framing),(3161,3217,quality),(3217,3225,log)]
+            (3153,3161,framing),(3161,3217,quality),(3217,3227,log)]
     for language in range(36):
         table=read(new,'<Q',0x311C5A0+8*language)[0]
         original_table=read(old,'<Q',0x311C5A0+8*language)[0]
-        need(table==0x40A70000+language*3226*4,'language table position')
-        offsets=read(new,'<3226i',table-base)
+        need(table==0x40A70000+language*3228*4,'language table position')
+        offsets=read(new,'<3228i',table-base)
         need(offsets[:3137]==read(old,'<3137i',original_table-base),'native string offsets')
         blob=read(new,'<Q',0x387AF58+8*language)[0]
         for lo,hi,enabled in ranges:
@@ -54,5 +54,5 @@ def verify_contract(old,new,features):
     if log:need(end>=0x40B50000 and not any(new[0x40B0E000-base:0x40B0F100-base]),'Log private state initialized')
     if quality:need(new[0x40A40000-base]==0,'star force initially clear')
     if framing:need(not any(new[0x4097F000-base:0x40980000-base]),'AP state initialized')
-    return dict(status='PASS',video_menu=video,language_tables=36,offsets_per_language=3226,
+    return dict(status='PASS',video_menu=video,language_tables=36,offsets_per_language=3228,
                 exact_group_visibility=True,zero_state=True,loader_end=hex(end))

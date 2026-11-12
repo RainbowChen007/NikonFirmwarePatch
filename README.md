@@ -26,10 +26,10 @@ Nikon Z8 C 3.11 实验补丁的离线构建工具。提供四组可独立选择�
 |---|---|
 | `framing` | FX 8.3K 30/25/24p N-RAW 开放门 3:2、反挤压预览／回放、N-RAW 四档品质 |
 | `video-quality` | ProRes HQ／422／LT／Proxy 及 HQ 星标；H.265 五档码率、星标与保护计时修正 |
-| `log-colour` | Log 菜单选择 N-Log／BT.2020、S-Log3／S-Gamut3.Cine、Log3G10／REDWideGamutRGB，含标签、图标和显示辅助 |
+| `log-colour` | Log 菜单顺序为 N-Log／BT.2020、Log3G10／REDWideGamutRGB、S-Log3／S-Gamut3.Cine、C-Log2／Cinema Gamut、C-Log3／Cinema Gamut，含标签、图标和显示辅助 |
 | `photo-tools` | C15/C30 RAW 预拍（FX/DX，无损选择回退 HE★）与像素偏移合成（修复任意起始编号的组识别） |
 
-N-RAW 四档始终与开放门在同一组；`video-quality` 指 ProRes＋H.265。反挤压可关闭，开放门只在选择相应画幅时启用。照片组的两项功能各有机内入口。像素位移合成需要完整的 FX 无损 NEF 组，预拍输出不适用。Log 录像使用经实拍标定的矩阵与常量 Cpxs；S-Log3 沿用原厂截零，Log3G10 录像不含 RED 的 F 映射。
+N-RAW 四档始终与开放门在同一组；`video-quality` 指 ProRes＋H.265。反挤压可关闭，开放门只在选择相应画幅时启用。照片组的两项功能各有机内入口。像素位移合成需要完整的 FX 无损 NEF 组，预拍输出不适用。Log 录像使用经实拍标定的矩阵与常量 Cpxs；S-Log3 与 C-Log2 沿用原厂截零，Log3G10 录像不含 RED 的 F 映射。C-Log2 的矩阵由 Log3G10 标定结果换算到 Cinema Gamut，尚未单独实拍标定。
 
 四组有 15 种非空组合。旧选项 `prores / precapture / pixelshift / opengate-nraw` 不再被当前 CLI 接受，也不会静默扩大为新组；需要复现旧包时使用对应旧发布源码与工具包。
 
@@ -133,10 +133,10 @@ This offline toolkit builds experimental patches for the original Nikon Z8 C 3.1
 |---|---|
 | `framing` | FX 8.3K 30/25/24p N-RAW 3:2 open gate, anamorphic desqueeze in preview and playback, and four N-RAW quality tiers |
 | `video-quality` | ProRes HQ/422/LT/Proxy with an HQ star, plus five H.265 bitrate settings, star indication and a protection-timer fix |
-| `log-colour` | N-Log / BT.2020, S-Log3 / S-Gamut3.Cine or Log3G10 / REDWideGamutRGB, with labels, icons and view assist |
+| `log-colour` | Menu order N-Log / BT.2020, Log3G10 / REDWideGamutRGB, S-Log3 / S-Gamut3.Cine, C-Log2 / Cinema Gamut, C-Log3 / Cinema Gamut, with labels, icons and view assist |
 | `photo-tools` | C15/C30 RAW pre-capture in FX/DX with lossless selection falling back to HE★, and pixel-shift merging with any starting file number |
 
-The four N-RAW tiers belong to the open-gate group. ProRes and H.265 belong to `video-quality`. Desqueeze can be disabled, and open gate applies only when the corresponding frame size is selected. The two photo tools have separate camera controls. Pixel-shift merging requires a complete group of lossless FX NEFs, which excludes pre-capture outputs. Log recording uses camera-calibrated matrices and constant chroma compensation (Cpxs). S-Log3 retains stock clipping at zero; Log3G10 recording omits RED’s F mapping.
+The four N-RAW tiers belong to the open-gate group. ProRes and H.265 belong to `video-quality`. Desqueeze can be disabled, and open gate applies only when the corresponding frame size is selected. The two photo tools have separate camera controls. Pixel-shift merging requires a complete group of lossless FX NEFs, which excludes pre-capture outputs. Log recording uses camera-calibrated matrices and constant chroma compensation (Cpxs). S-Log3 and C-Log2 retain stock clipping at zero; Log3G10 recording omits RED’s F mapping. The C-Log2 matrix is the Log3G10 calibration converted to Cinema Gamut and has no separate camera fit.
 
 There are 15 nonempty combinations. The current CLI rejects the legacy names `prores / precapture / pixelshift / opengate-nraw` to avoid silently expanding a selection. To reproduce an earlier package, use that release’s source and toolkit.
 

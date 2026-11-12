@@ -4,7 +4,7 @@
 |---|---|---|
 | `framing` | 3:2 开放门、N-RAW 四档画质、反挤压显示 | 画面尺寸／帧频、N-RAW 画质、反挤压 |
 | `video-quality` | ProRes 四档与 HQ 星标、H.265 五档码率及对应星标 | ProRes 画质、H.265 画质 |
-| `log-colour` | N-Log、S-Log3、Log3G10 选择及相关显示／标签 | Log 设定 |
+| `log-colour` | N-Log、Log3G10、S-Log3、C-Log2、C-Log3 选择及相关显示／标签 | Log 设定 |
 | `photo-tools` | C15/C30 RAW 预拍、像素偏移合成 | 普通画质、RAW 记录、像素变化合成 |
 
 每组可以独立从原厂 C 3.11 构建，也可一次选择多组，共 15 种非空组合。N-RAW 画质与开放门共同使用码率及剩余时间逻辑，保留在同一组。反挤压可在菜单关闭；RAW 预拍与像素偏移使用各自入口。

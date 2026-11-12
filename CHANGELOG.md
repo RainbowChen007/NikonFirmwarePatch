@@ -1,5 +1,10 @@
 # 更新日志 / Changelog
 
+## 未发布 / Unreleased
+
+- Log 菜单顺序为 N-Log、Log3G10、S-Log3、C-Log2、C-Log3。C-Log2 与 C-Log3 都按佳能公开公式写入现有 229 节点表，矩阵由已标定的 Log3G10 换到 Cinema Gamut，尚未单独实拍标定。
+- The Log menu order is N-Log, Log3G10, S-Log3, C-Log2, C-Log3. Both Canon curves use the published formulas on the existing 229 nodes. Their matrix is the calibrated Log3G10 result converted to Cinema Gamut and has no separate camera measurement yet.
+
 ## v0.4.0 — 四组补丁 / Four feature groups
 
 当前预发布：[v0.4.0-rc.2](https://github.com/XinmiaoZhao/NikonFirmwarePatch/releases/tag/v0.4.0-rc.2)。以下变化相对于上一公开功能系列 v0.3.0／v0.3.0-r1。RC2 补全 README 使用说明、致谢和模拟器截图；固件补丁与 RC1 相同。

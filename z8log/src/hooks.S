@@ -1,8 +1,9 @@
-/* Integrated three-choice Log module with clip-driven playback view assist.
+/* Integrated five-choice Log module with clip-driven playback view assist.
  *
- * Setting LOG_TYPE: 0=N-Log, 1=S-Log3, 2=Log3G10. All other values, including
- * the former private test value 3, read as N-Log. Menu rows store only 0..2.
- * Reads do not write settings. The clamp loader stays stock; no fourth row.
+ * Setting LOG_TYPE: 0=N-Log, 1=S-Log3, 2=Log3G10, 3=C-Log2, 4=C-Log3.
+ * Values above 4 read as N-Log. The menu order is N-Log, Log3G10, S-Log3,
+ * C-Log2, C-Log3; lg_row_type maps the cursor row back to these type ids.
+ * Reads do not write settings. The clamp loader stays stock.
  *
  * Playback info at A032CDA00: +77C picture-control name, +1E78 tone, +1E7C codec.
  * Class >=5 retains N-Log. PB_TYPE = 0 outside Log playback; 80|type selects the
@@ -27,15 +28,18 @@
 #define NAME_SLOG3_HI 0x00003347    /* "G3\0\0" */
 #define NAME_G10_LO   0x33474F4C    /* "LOG3" */
 #define NAME_G10_HI   0x00303147    /* "G10\0" */
+#define NAME_CLOG2_LO 0x4F4C2D43    /* "C-LO"; C-Log3 shares this word */
+#define NAME_CLOG2_HI 0x00003247    /* "G2\0\0" */
+#define NAME_CLOG3_HI 0x00003347    /* "G3\0\0", same second word as S-LOG3 */
 
 #define PB_INFO     0xA032CDA00     /* L3: GUI playback info (1F18h; 403FB4AC copies it, 403FB4CC returns it; L4: 407A7750 builds it) */
 #define PB_NAME     0x77C           /* L3: picture control name, 20 bytes (407A7D48) */
 #define PB_TONE     0xE78           /* L3: +1000h + E78h = tone (stock 4064D5EC; written at 407995CC) */
 
-.macro LOGTYPE r                    // w\r = type 0..2; all invalid values -> 0; sets flags
+.macro LOGTYPE r                    // w\r = type 0..4; all invalid values -> 0; sets flags
     ldr x\r, =LOG_TYPE
     ldrb w\r, [x\r]
-    cmp w\r, #2
+    cmp w\r, #4
     csel w\r, w\r, wzr, ls
 .endm
 
@@ -44,21 +48,21 @@
     movk w\r, #(((\v) >> 16) & 0xffff), lsl #16
 .endm
 
-.macro EFFTYPE r                    // L3: w\r = the playback clip's type while PB_TYPE bit 7 is set (values above 2 read 0),
+.macro EFFTYPE r                    // L3: w\r = the playback clip's type while PB_TYPE bit 7 is set (values above 4 read 0),
     ldr x\r, =PB_TYPE                  // else LOGTYPE; x\r is the only register used; flags are not preserved
     ldrb w\r, [x\r]
     tbz w\r, #7, 86f
     and w\r, w\r, #0x7f
-    cmp w\r, #2
+    cmp w\r, #4
     csel w\r, w\r, wzr, ls
     b 87f
 86: LOGTYPE \r
 87:
 .endm
 
-.macro CLIPTYPE i, o, t1, t2        // L3: w\o = Log type of the clip whose playback info is at x\i: 1 for the picture control
-    mov w\o, #0                        // name S-LOG3, 2 for LOG3G10, else 0.  L6: for every codec class (L3..L5 gave ProRes RAW /
-    ldr w\t1, [x\i, #PB_NAME]          // N-RAW, class >= 5, type 0; their playback shows the proxy, encoded in the named Log).
+.macro CLIPTYPE i, o, t1, t2        // L3: w\o = Log type of the clip whose playback info is at x\i: 1 S-LOG3,
+    mov w\o, #0                        // 2 LOG3G10, 3 C-LOG2, 4 C-LOG3, else 0.  ProRes RAW / N-RAW stay type 0.
+    ldr w\t1, [x\i, #PB_NAME]
     MOVW \t2, NAME_SLOG3_LO
     cmp w\t1, w\t2
     b.ne 88f
@@ -69,12 +73,26 @@
     b 89f
 88: MOVW \t2, NAME_G10_LO
     cmp w\t1, w\t2
-    b.ne 89f
+    b.ne 90f
     ldr w\t1, [x\i, #(PB_NAME + 4)]
     MOVW \t2, NAME_G10_HI
     cmp w\t1, w\t2
     cset w\o, eq
     lsl w\o, w\o, #1
+    b 89f
+90: MOVW \t2, NAME_CLOG2_LO
+    cmp w\t1, w\t2
+    b.ne 89f
+    ldr w\t1, [x\i, #(PB_NAME + 4)]
+    MOVW \t2, NAME_CLOG2_HI
+    cmp w\t1, w\t2
+    b.ne 91f
+    mov w\o, #3
+    b 89f
+91: MOVW \t2, NAME_CLOG3_HI
+    cmp w\t1, w\t2
+    cset w\o, eq
+    lsl w\o, w\o, #2                // 0 or 1 -> 0 or 4
 89:
 .endm
 
@@ -92,6 +110,12 @@ lg_rgb_hook:                        // 4111A508: movk x8, #0, lsl #48
     b.eq 1f
     ldr x11, =LG_RGB2
     cmp w10, #2
+    b.eq 1f
+    ldr x11, =LG_RGB3
+    cmp w10, #3
+    b.eq 1f
+    ldr x11, =LG_RGB4
+    cmp w10, #4
     b.ne 2f
 1:  mov x8, x11
 2:  ldp x10, x11, [sp], #16
@@ -109,6 +133,12 @@ lg_nlg_hook:                        // 4111A6D4: madd x1, x9, x2, x10 (x9, x10 d
     b.eq 1f
     ldr x9, =LG_NLG2
     cmp w10, #2
+    b.eq 1f
+    ldr x9, =LG_NLG3
+    cmp w10, #3
+    b.eq 1f
+    ldr x9, =LG_NLG4
+    cmp w10, #4
     b.ne 9f
 1:  mov x1, x9
 9:  b original_4111A6D8             // mov w9, #0x16a2; then the copy call
@@ -126,8 +156,16 @@ lg_m2_hook:                         // 41116CB4: madd x11, x8, x11, x9 (x9 = 441
     ldr x9, =(LG_M2_1 - 0x12)
     b 8f
 1:  cmp w12, #2
-    b.ne 8f
+    b.ne 3f
     ldr x9, =(LG_M2_2 - 0x12)
+    b 8f
+3:  cmp w12, #3
+    b.ne 4f
+    ldr x9, =(LG_M2_3 - 0x12)
+    b 8f
+4:  cmp w12, #4
+    b.ne 8f
+    ldr x9, =(LG_M2_4 - 0x12)
 8:  msr nzcv, x13
     ldp x12, x13, [sp], #16
     madd x11, x8, x11, x9
@@ -147,8 +185,16 @@ lg_m1_hook:                         // 41116010: movk x14, #0, lsl #48 (x14 = 44
     ldr x14, =(LG_M1_1 - 0x24)
     b 8f
 1:  cmp w15, #2
-    b.ne 8f
+    b.ne 3f
     ldr x14, =(LG_M1_2 - 0x24)
+    b 8f
+3:  cmp w15, #3
+    b.ne 4f
+    ldr x14, =(LG_M1_3 - 0x24)
+    b 8f
+4:  cmp w15, #4
+    b.ne 8f
+    ldr x14, =(LG_M1_4 - 0x24)
 8:  msr nzcv, x16
     ldp x15, x16, [sp], #16
     b original_41116014
@@ -169,6 +215,12 @@ lg_cpxs_hook:                       // 4111A198: ldrb w21, [x19, #0x28], right a
     b.eq 1f
     ldr x9, =LG_CPXS2
     cmp w10, #2
+    b.eq 1f
+    ldr x9, =LG_CPXS3
+    cmp w10, #3
+    b.eq 1f
+    ldr x9, =LG_CPXS4
+    cmp w10, #4
     b.ne 8f
 1:  str x9, [x19, #0xb0]            // the selected record's Pa..Pf table pointer
 8:  msr nzcv, x11
@@ -187,7 +239,7 @@ lg_tag26_tail:                      // 406D2D94: mov w0, #1; then str w8, [x1, #
     b.hs 9f                         // ProRes RAW, N-RAW keep N-Log (L1 rule; with 1 Resolve decodes N-RAW as Rec.709)
     LOGTYPE 9
     cbz w9, 9f
-    mov w8, #1                      // S-Log3, Log3G10: Rec.709 tone tag (Resolve shows Rec709 (Scene))
+    mov w8, #1                      // S-Log3, Log3G10, C-Log2: Rec.709 tone tag (Resolve shows Rec709 (Scene))
 9:  mov w0, #1
     str w8, [x1, #0xb0]
     ret
@@ -265,8 +317,8 @@ lg_keycount_hook:                   // 406C1988: cinc w21, w9, eq (w9 = 2, flags
     str x9, [sp, #-16]!
     LOGTYPE 9
     cmp w9, #2
-    b.ne 8f
-    mov w21, #2                     // Log3G10: manufacturer and model only
+    b.lo 8f
+    mov w21, #2                     // Log3G10, C-Log2: manufacturer and model only
 8:  ldr x9, [sp], #16
     cmp w8, #2                      // the stock flags again
 9:  b original_406C198C
@@ -324,12 +376,22 @@ lg_pc_write:                        // 406D3994 (whole function): NCTG 2000023h 
     stp wzr, wzr, [x19, #0x10]
     str wzr, [x19, #0x18]
     cmp w20, #1
-    b.ne 3f
-    MOVW 11, NAME_SLOG3_LO
+    b.eq 3f
+    cmp w20, #3
+    b.eq 5f
+    cmp w20, #4
+    b.eq 6f
+    MOVW 11, NAME_G10_LO
+    MOVW 12, NAME_G10_HI
+    b 4f
+3:  MOVW 11, NAME_SLOG3_LO
     MOVW 12, NAME_SLOG3_HI
     b 4f
-3:  MOVW 11, NAME_G10_LO
-    MOVW 12, NAME_G10_HI
+5:  MOVW 11, NAME_CLOG2_LO
+    MOVW 12, NAME_CLOG2_HI
+    b 4f
+6:  MOVW 11, NAME_CLOG2_LO
+    MOVW 12, NAME_CLOG3_HI
 4:  stp w11, w12, [x19, #8]
 9:  ldp x19, x20, [sp, #0x30]
     ldr x30, [sp, #0x40]
@@ -352,8 +414,18 @@ lg_pc_parse_tail:                   // 406D05FC: b 406D0480 at the end of the 20
     b 9f
 1:  MOVW 12, NAME_G10_LO
     cmp w10, w12
-    b.ne 9f
+    b.ne 3f
     MOVW 12, NAME_G10_HI
+    cmp w11, w12
+    b.eq 2f
+    b 9f
+3:  MOVW 12, NAME_CLOG2_LO
+    cmp w10, w12
+    b.ne 9f
+    MOVW 12, NAME_CLOG2_HI
+    cmp w11, w12
+    b.eq 2f
+    MOVW 12, NAME_CLOG3_HI
     cmp w11, w12
     b.ne 9f
 2:  sub x9, x9, #0x2a4
@@ -438,6 +510,12 @@ lg_va_sel0:                         // 402D1AA4: b 402D19E8 in 402D197C, mode 1:
     cmp w11, #1
     b.eq 9f
     ldr x10, =LG_VA_MAT2
+    cmp w11, #2
+    b.eq 9f
+    ldr x10, =LG_VA_MAT3
+    cmp w11, #3
+    b.eq 9f
+    ldr x10, =LG_VA_MAT4
 9:  b original_402D19E8
 
 .balign 16
@@ -451,6 +529,14 @@ lg_va_sel1:                         // 402D1CF8: b 402D1B90 in 402D1AD0, mode 1:
     b.eq 1f
     ldr x10, =LG_VA_MAT2
     ldr x12, =LG_VA_CB2
+    cmp w14, #2
+    b.eq 1f
+    ldr x10, =LG_VA_MAT3
+    ldr x12, =LG_VA_CB3
+    cmp w14, #3
+    b.eq 1f
+    ldr x10, =LG_VA_MAT4
+    ldr x12, =LG_VA_CB4
 1:  add x10, x10, x8, lsl #4
 9:  b original_402D1B90
 
@@ -521,9 +607,19 @@ lg_icon_tail:                       // 4041A868: b 4041A954 (Log branch: w0 = 24
     mov w4, #(ICON_BASE + 1)
     b 8f
 1:  cmp w9, #2
-    b.ne 8f
+    b.ne 2f
     mov w3, #(ICON_BASE + 2)
     mov w4, #(ICON_BASE + 3)
+    b 8f
+2:  cmp w9, #3
+    b.ne 3f
+    mov w3, #(ICON_BASE + 4)
+    mov w4, #(ICON_BASE + 5)
+    b 8f
+3:  cmp w9, #4
+    b.ne 8f
+    mov w3, #(ICON_BASE + 6)
+    mov w4, #(ICON_BASE + 7)
 8:  msr nzcv, x10
     ldp x9, x10, [sp], #16
     b original_4041A954
@@ -582,27 +678,35 @@ lg_sub_entry_hook:                  // entry callback of state B5h (x0 = state):
 
 .balign 16
 .global lg_sub_ok_hook
-lg_sub_ok_hook:                     // OK action of the three option rows (x0 = context): store the cursor row 0..2 (AP2's rule)
+lg_sub_ok_hook:                     // OK action of the five menu rows: store the type id, not the row number
     ldr x9, [x0]                    // state
     ldrh w11, [x9, #0x58]           // first shown row
     ldrh w10, [x9, #0x32]           // cursor within the shown rows
     add w10, w10, w11
-    cmp w10, #2
+    cmp w10, #4
     b.hi 1f
+    adr x8, lg_row_type
+    ldrb w10, [x8, w10, uxtw]
     ldr x8, =LOG_TYPE
     strb w10, [x8]
 1:  ret
 
 .ltorg
 .balign 4
-lg_option_items:                    // item ids of the three option rows (type 0..2); see build_l2.py
-    .hword OPTION_ITEM0, OPTION_ITEM1, OPTION_ITEM2
+lg_row_type:                        // menu row -> type. Order: N-Log, Log3G10, S-Log3, C-Log2, C-Log3
+    .byte 0, 2, 1, 3, 4, 0, 0, 0
+lg_option_items:                    // item ids indexed by stored type 0..4
+    .hword OPTION_ITEM0, OPTION_ITEM1, OPTION_ITEM2, OPTION_ITEM3, OPTION_ITEM4
 .balign 8
-lg_value_texts:                     // value text of the Log settings row, type 0..2 (8 bytes each, ASCII as the stock HIGH/NORM)
+lg_value_texts:                     // value text of the Log settings row, indexed by type (8 bytes each)
     .ascii "N-Log\0\0\0"
     .ascii "S-Log3\0\0"
     .ascii "Log3G10\0"
-lg_pb_names:                        // playback detail page labels (8 bytes each, with the terminator)
+    .ascii "C-Log2\0\0"
+    .ascii "C-Log3\0\0"
+lg_pb_names:                        // playback detail page labels, indexed by type
     .ascii "N-Log\0\0\0"
     .ascii "S-Log3\0\0"
     .ascii "Log3G10\0"
+    .ascii "C-Log2\0\0"
+    .ascii "C-Log3\0\0"
